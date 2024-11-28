@@ -895,68 +895,20 @@ export class AlphaRouter
       );
     this.portionProvider = portionProvider ?? new PortionProvider();
 
-    const chainName = ID_TO_NETWORK_NAME(chainId);
-
     // ipfs urls in the following format: `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/${protocol}/${chainName}.json`;
     if (v2SubgraphProvider) {
       this.v2SubgraphProvider = v2SubgraphProvider;
-    } else {
-      this.v2SubgraphProvider = new V2SubgraphProviderWithFallBacks([
-        new CachingV2SubgraphProvider(
-          chainId,
-          new URISubgraphProvider(
-            chainId,
-            `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/v2/${chainName}.json`,
-            undefined,
-            0
-          ),
-          new NodeJSCache(new NodeCache({ stdTTL: 300, useClones: false }))
-        ),
-        new StaticV2SubgraphProvider(chainId),
-      ]);
     }
-
+      
     if (v3SubgraphProvider) {
       this.v3SubgraphProvider = v3SubgraphProvider;
-    } else {
-      this.v3SubgraphProvider = new V3SubgraphProviderWithFallBacks([
-        new CachingV3SubgraphProvider(
-          chainId,
-          new URISubgraphProvider(
-            chainId,
-            `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/v3/${chainName}.json`,
-            undefined,
-            0
-          ),
-          new NodeJSCache(new NodeCache({ stdTTL: 300, useClones: false }))
-        ),
-        new StaticV3SubgraphProvider(chainId, this.v3PoolProvider),
-      ]);
-    }
+    } 
 
     this.v4PoolParams =
       v4PoolParams ?? getApplicableV4FeesTickspacingsHooks(chainId);
     if (v4SubgraphProvider) {
       this.v4SubgraphProvider = v4SubgraphProvider;
-    } else {
-      this.v4SubgraphProvider = new V4SubgraphProviderWithFallBacks([
-        new CachingV4SubgraphProvider(
-          chainId,
-          new URISubgraphProvider(
-            chainId,
-            `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/v4/${chainName}.json`,
-            undefined,
-            0
-          ),
-          new NodeJSCache(new NodeCache({ stdTTL: 300, useClones: false }))
-        ),
-        new StaticV4SubgraphProvider(
-          chainId,
-          this.v4PoolProvider,
-          this.v4PoolParams
-        ),
-      ]);
-    }
+    } 
 
     let gasPriceProviderInstance: IGasPriceProvider;
     if (JsonRpcProvider.isProvider(this.provider)) {
